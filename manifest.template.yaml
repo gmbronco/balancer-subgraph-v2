@@ -59,10 +59,6 @@ dataSources:
         - User
         - UserInternalBalance
         - Token
-        - TokenSnapshot
-        - TradePair
-        - TradePairSnapshot
-        - BalancerSnapshot
       abis:
         - name: Vault
           file: ./abis/Vault.json
@@ -2480,4 +2476,3 @@ templates:
       eventHandlers:
         - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
           handler: handleAnswerUpdated
-

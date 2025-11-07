@@ -12,7 +12,6 @@ import {
   newPoolEntity,
   createPoolTokenEntity,
   scaleDown,
-  getBalancerSnapshot,
   tokenToDecimal,
   stringToBytes,
   bytesToAddress,
@@ -772,13 +771,7 @@ function findOrInitializeVault(): Balancer {
   // if no vault yet, set up blank initial
   vault = new Balancer('2');
   vault.poolCount = 0;
-  vault.totalLiquidity = ZERO_BD;
-  vault.totalSwapVolume = ZERO_BD;
-  vault.totalSwapFee = ZERO_BD;
   vault.totalSwapCount = ZERO;
-
-  // set up protocol fees collector
-  vault.protocolFeesCollector = getProtocolFeeCollector();
 
   return vault;
 }
@@ -810,10 +803,6 @@ function handleNewPool(event: PoolCreated, poolId: Bytes, swapFee: BigInt): Pool
     let vault = findOrInitializeVault();
     vault.poolCount += 1;
     vault.save();
-
-    let vaultSnapshot = getBalancerSnapshot(vault.id, event.block.timestamp.toI32());
-    vaultSnapshot.poolCount += 1;
-    vaultSnapshot.save();
   }
 
   let poolContract = PoolContract.load(poolAddress.toHexString());
