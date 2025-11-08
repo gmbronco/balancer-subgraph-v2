@@ -270,13 +270,6 @@ export function createToken(tokenAddress: Address): Token {
   if (!maybeSymbol.reverted) symbol = maybeSymbol.value;
   if (!maybeDecimals.reverted) decimals = maybeDecimals.value;
 
-  let pool = WeightedPool.bind(tokenAddress);
-  let isPoolCall = pool.try_getPoolId();
-  if (!isPoolCall.reverted) {
-    let poolId = isPoolCall.value;
-    token.pool = poolId.toHexString();
-  }
-
   token.name = name;
   token.symbol = symbol;
   token.decimals = decimals;

@@ -26,7 +26,7 @@ import { BigInt, Address, Bytes, ethereum, log } from '@graphprotocol/graph-ts';
 import { PoolCreated } from '../types/WeightedPoolFactory/WeightedPoolFactory';
 import { AaveLinearPoolCreated } from '../types/AaveLinearPoolV3Factory/AaveLinearPoolV3Factory';
 import { ProtocolIdRegistered } from '../types/ProtocolIdRegistry/ProtocolIdRegistry';
-import { Balancer, Pool, PoolContract, ProtocolIdData } from '../types/schema';
+import { Balancer, Pool, PoolContract, ProtocolIdData, Token } from '../types/schema';
 import { KassandraPoolCreated } from '../types/ManagedKassandraPoolControllerFactory/ManagedKassandraPoolControllerFactory';
 import { NewFXPoolDeployer } from '../types/FXPoolDeployerTracker/FXPoolDeployerTracker';
 
@@ -62,7 +62,7 @@ import { Assimilator } from '../types/FXPoolDeployer/Assimilator';
 import { ChainlinkPriceFeed } from '../types/FXPoolDeployer/ChainlinkPriceFeed';
 import { OunceToGramOracle } from '../types/templates/FXPoolDeployer/OunceToGramOracle';
 import { AggregatorConverter } from '../types/templates/FXPoolDeployer/AggregatorConverter';
-import { Transfer } from '../types/Vault/ERC20';
+import { ERC20, Transfer } from '../types/Vault/ERC20';
 import { handleTransfer, setPriceRateProvider } from './poolController';
 import { ComposableStablePool } from '../types/ComposableStablePoolFactory/ComposableStablePool';
 
@@ -825,6 +825,15 @@ function handleNewPoolTokens(pool: Pool, tokens: Bytes[]): void {
     if (!assetManager) continue;
 
     createPoolTokenEntity(pool, tokensAddresses[i], i, assetManager);
+
+    // Handle BPT
+    if (tokensAddresses[i] === pool.address) {
+      let bpt = Token.load(pool.address.toHexString());
+      if (bpt !== null) {
+        bpt.pool = pool.id;
+        bpt.save();
+      }
+    }
   }
 }
 
